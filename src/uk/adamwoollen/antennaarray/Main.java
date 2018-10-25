@@ -1,12 +1,29 @@
 package uk.adamwoollen.antennaarray;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Main
 {
+    private static BasicEx swarmVisualiser;
+
     public static void main(String[] args)
     {
+//        EventQueue.invokeLater(new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+                swarmVisualiser = new BasicEx();
+                swarmVisualiser.setVisible(true);
+//            }
+//        });
+
+
+
+
+
         AntennaArray antennaArray = new AntennaArray(3, 90);
 
         System.out.println("Testing uniform design");
@@ -14,18 +31,21 @@ public class Main
         double peakSSL = antennaArray.evaluate(antennaArrayDesign);
         System.out.println(peakSSL);
 
-        System.out.println("Running random for 5 seconds");
-        double lowestRandomPeakSSL = solveUsingRandom(antennaArray, 5);
-        System.out.println(lowestRandomPeakSSL);
+//        System.out.println("Running random for 5 seconds");
+//        double lowestRandomPeakSSL = solveUsingRandom(antennaArray, 5);
+//        System.out.println(lowestRandomPeakSSL);
         
         System.out.println("Running PSO for 10 seconds");
-        double bestParticleSolution = solveUsingParticleSwarmOptimisation(antennaArray, 10);
-        System.out.println(bestParticleSolution);
+        double[] bestParticleSolution = solveUsingParticleSwarmOptimisation(antennaArray, 10);
+        System.out.println(Arrays.toString(bestParticleSolution));
+        System.out.println(antennaArray.evaluate(convertVectorToAntennaArrayDesign(antennaArray, bestParticleSolution)));
+
+        System.out.println("Finished");
     }
     
-    private static double solveUsingParticleSwarmOptimisation(AntennaArray antennaArray, int secondsToRunFor)
+    private static double[] solveUsingParticleSwarmOptimisation(AntennaArray antennaArray, int secondsToRunFor)
     {
-    	Particle[] swarm = new Particle[20];
+    	Particle[] swarm = new Particle[21];//max 26 without breaking coloured visualisation
     	Arrays.parallelSetAll(swarm, i -> new Particle(antennaArray));
     	
     	long startTime = System.nanoTime();
@@ -34,10 +54,28 @@ public class Main
         {
 	        for (Particle particle : swarm)
 	    	{
-	    		particle.move(antennaArray, 0.721, 1.1193, 1.1193);
+	    		particle.move(antennaArray, 0.7211, 1.1193, 1.1193);
 	    	}
+            visualise(swarm);
         }
-    	return Particle.getGlobalBestValue();
+    	return Particle.getGlobalBest();
+    }
+
+    private static void visualise(Particle[] swarm)
+    {
+        double[][] swarmPositions = new double[swarm.length][2];
+        for (int i = 0; i < swarm.length; i++)
+        {
+            swarmPositions[i] = swarm[i].getPosition();
+        }
+
+        swarmVisualiser.updatePositions(swarmPositions);
+
+//        try {
+//            Thread.sleep(1);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private static double solveUsingRandom(AntennaArray antennaArray, int secondsToRunFor)

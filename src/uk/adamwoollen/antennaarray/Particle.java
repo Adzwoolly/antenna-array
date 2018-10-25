@@ -20,6 +20,7 @@ public class Particle
     public Particle(AntennaArray antennaArray)
     {
         position = Main.getRandomVector(antennaArray);
+        Arrays.sort(position);
         velocity = Main.getRandomUniformVector(antennaArray.getNumberOfAntenna() - 1);
         personalBestValue = Double.MAX_VALUE;
         personalBest = position;
@@ -32,8 +33,19 @@ public class Particle
     	return globalBestValue;
     }
 
+    public static double[] getGlobalBest()
+    {
+        return globalBest;
+    }
+
+    public double[] getPosition()
+    {
+        return position;
+    }
+
     public void move(AntennaArray antennaArray, double inertialCoefficient, double cognitiveCoefficient, double socialCoefficient)
     {
+        double[] originalPosition = Arrays.copyOf(position, position.length);
         //move
         //newVelocity = (currentVelocity * inertialCoefficient) + (vectorToPersonalBest * cognitiveCoefficient * randomVector) + (vectorToGlobalBest * socialCoefficient * randomVector)
         double[] inertialVector = multiplyVector(velocity, inertialCoefficient);
@@ -45,14 +57,8 @@ public class Particle
         double[] vectorToGlobalBest = vectorFromAToB(position, globalBest);
         double[] randomUniformVector2 = Main.getRandomUniformVector(antennaArray.getNumberOfAntenna() - 1);
         double[] socialVector = multiplyVector(multiplyVectors(randomUniformVector2, vectorToGlobalBest), socialCoefficient);
-
-//        System.out.println("---");
-//        System.out.println(Arrays.toString(inertialVector));
-//        System.out.println(Arrays.toString(cognitiveVector));
-//        System.out.println(Arrays.toString(socialVector));
         
-        addVectors(inertialVector, cognitiveVector, socialVector);
-        
+        velocity = multiplyVector(addVectors(inertialVector, cognitiveVector, socialVector), 1);// Can reduce multiplier to make movement less erratic.
         position = addVectors(position, velocity);
         
         evaluate(antennaArray);
@@ -103,7 +109,7 @@ public class Particle
     	{
     		for (double[] vector : vectors)
     		{
-    			newVector[i] =+ vector[i];
+    			newVector[i] += vector[i];
     		}
     	}
     	return newVector;
