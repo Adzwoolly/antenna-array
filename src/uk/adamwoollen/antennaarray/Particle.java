@@ -45,8 +45,6 @@ public class Particle
 
     public void move(AntennaArray antennaArray, double inertialCoefficient, double cognitiveCoefficient, double socialCoefficient)
     {
-        double[] originalPosition = Arrays.copyOf(position, position.length);
-        //move
         //newVelocity = (currentVelocity * inertialCoefficient) + (vectorToPersonalBest * cognitiveCoefficient * randomVector) + (vectorToGlobalBest * socialCoefficient * randomVector)
         double[] inertialVector = multiplyVector(velocity, inertialCoefficient);
         
@@ -132,6 +130,15 @@ public class Particle
     	if (vectors.length == 0) throw new IllegalArgumentException("No vectors provided");
     	for (int i = 0; i < vectors.length - 1; i++)
     	{
+    	    if (vectors[i] == null)
+            {
+                throw new NullPointerException("Jeez, how did you end up giving me null?  Looks like it was vector " + i);
+            }
+            if (vectors[i + 1] == null)
+            {
+                throw new NullPointerException("Jeez, how did you end up giving me null?  Looks like it was vector " + (i + 1));
+            }
+
     		if (vectors[i].length != vectors[i + 1].length)
         	{
         		throw new IllegalArgumentException("Can't perform operation on arrays whose lengths don't match");

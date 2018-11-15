@@ -1,6 +1,5 @@
 package uk.adamwoollen.antennaarray;
 
-import java.awt.*;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -10,31 +9,15 @@ public class Main
 
     public static void main(String[] args)
     {
-//        EventQueue.invokeLater(new Runnable()
-//        {
-//            @Override
-//            public void run()
-//            {
-                swarmVisualiser = new BasicEx();
-                swarmVisualiser.setVisible(true);
-//            }
-//        });
-
-
-
-
+        swarmVisualiser = new BasicEx();
+        swarmVisualiser.setVisible(true);
 
         AntennaArray antennaArray = new AntennaArray(3, 90);
 
-        System.out.println("Testing uniform design");
-        double[] antennaArrayDesign = new double[]{0.5, 1.0, 1.5};
-        double peakSSL = antennaArray.evaluate(antennaArrayDesign);
-        System.out.println(peakSSL);
-
-//        System.out.println("Running random for 5 seconds");
-//        double lowestRandomPeakSSL = solveUsingRandom(antennaArray, 5);
+//        System.out.println("Running random for 10 seconds");
+//        double lowestRandomPeakSSL = solveUsingRandom(antennaArray, 10);
 //        System.out.println(lowestRandomPeakSSL);
-        
+
         System.out.println("Running PSO for 10 seconds");
         double[] bestParticleSolution = solveUsingParticleSwarmOptimisation(antennaArray, 10);
         System.out.println(Arrays.toString(bestParticleSolution));
@@ -108,7 +91,12 @@ public class Main
 
     public static double[] getRandomVector(AntennaArray antennaArray)
     {
-        return getRandomVectorInRange(antennaArray.getNumberOfAntenna() - 1, 0, antennaArray.getNumberOfAntenna() / 2.0);
+        double[] randomVector = getRandomVectorInRange(antennaArray.getNumberOfAntenna() - 1, 0, antennaArray.getNumberOfAntenna() / 2.0);
+        while (!antennaArray.is_valid(convertVectorToAntennaArrayDesign(antennaArray, randomVector)))
+        {
+            randomVector = getRandomVectorInRange(antennaArray.getNumberOfAntenna() - 1, 0, antennaArray.getNumberOfAntenna() / 2.0);
+        }
+        return randomVector;
     }
     
     public static double[] getRandomUniformVector(int length)

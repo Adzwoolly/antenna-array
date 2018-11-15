@@ -7,7 +7,7 @@ import javax.swing.*;
 
 class Surface extends JPanel
 {
-    double[][] swarmPositions;
+    private double[][] swarmPositions;
 
     private void doDrawing(Graphics g)
     {
@@ -37,7 +37,7 @@ class Surface extends JPanel
         g2d.rotate(Math.PI/2);
         {
             g2d.drawString("Antenna 2", (int) (padding + (scale * problemSpace / 2)), -5);
-            
+
             double value = 0;
             double x = padding - 8;
             DecimalFormat df = new DecimalFormat("0.0");
@@ -63,7 +63,6 @@ class Surface extends JPanel
                 Color colour = i < colours.length ? colours[i] : Color.black;
 
                 g2d.setColor(colour);
-                double[] position = particlePosition;
                 g2d.fillOval(padding + (int)(particlePosition[0] * scale), padding + (int)(particlePosition[1] * scale), particleWidth, particleWidth);
             }
         }
